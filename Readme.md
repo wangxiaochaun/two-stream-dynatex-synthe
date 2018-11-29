@@ -27,6 +27,11 @@ python synthesize.py --type=dts --gpu=<NUMBER> --runid=<NAME>
 ```
 python synthesize.py --type=dts --gpu=0 --runid="my_cool_fish" --dynamics_target=data/dynamic_textures/fish --dynamics_model=models/MSOEnet_ucf101train01_6e-4_allaug_exceptscale_randorder.tfmodel
 ```
+---------
+```
+python main.py --type=dts --gpu=0 --runid="cloud!" --dynamics_target=data/dynamic_textures/cloud --dynamics_model=models/MSOEnet_ucf101train01_6e-4_allaug_exceptscale_randorder.tfmodel
+
+```
 
 ## 注意
 网络输出保存在'data/out/<RUNID>'中

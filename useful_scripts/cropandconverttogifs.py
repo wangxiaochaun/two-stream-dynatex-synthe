@@ -64,7 +64,6 @@ def makegif(path):
 
 def makegifs():
     for folder in get_immediate_subdirectories('.'):
-        print(folder)
         makegif(folder)
 
 
