@@ -1,6 +1,7 @@
 import tensorflow as tf
 import argparse
 from synthesizer import Synthesizer
+from synthesizer_styletransfer import SynthesizerStyleTransfer
 
 # set up argument parser
 parser = argparse.ArgumentParser()
@@ -34,7 +35,14 @@ my_config = {'batch_size': opt.batchsize, 'iterations': opt.iter, 'snapshot_freq
 if opt.type == 'dts':
     assert opt.dynamics_target != ''
     s = Synthesizer(opt.dynamics_target,
-                          config={'tf': config_proto,
-                                  'user': my_config})
+                    config={'tf': config_proto,
+                            'user': my_config})
+elif opt.type == 'dst':
+    assert opt.appearance_target != ''
+    assert opt.dynamics_target != ''
+    s = SynthesizerStyleTransfer(opt.dynamics_target,
+                                 opt.appearance_target,
+                                 config={'tf': config_proto,
+                                         'user': my_config})
 
 s.optimize()

@@ -52,7 +52,7 @@ def processImage(path):
                 new_frame.paste(last_frame)
 
             new_frame.paste(img, (0, 0), img.convert('RGBA'))
-            new_frame = new_frame.crop((10, 0, 266, 256))
+            new_frame = new_frame.crop((100, 0, 356, 256))
             new_frame = new_frame.convert("RGB")
             new_frame.save('%s-%d.png' % (''.join(os.path.basename(path).split('.')[: -1]), i), 'PNG')
 
@@ -62,4 +62,4 @@ def processImage(path):
     except EOFError:
         pass
 
-processImage('cloud.gif')
+processImage('sea1.gif')

@@ -106,6 +106,10 @@ class Optimizer(object):
             print('f diff = ' + str(loss_diff))
 
     def optimize(self):
+        """
+
+        :rtype:
+        """
         iterations = self.user_config['iterations']
         run_id = self.user_config['run_id']
 

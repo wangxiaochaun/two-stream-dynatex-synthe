@@ -19,18 +19,26 @@
     > 例如，我测试时用的GTX 1080,8G显存，只能跑8张图，就留8帧
 2. 运行
 ```
-python synthesize.py --type=dts --gpu=<NUMBER> --runid=<NAME>
+python main.py --type=dts --gpu=<NUMBER> --runid=<NAME>
 --dynamics_target=data/dynamic_textures/<FOLDER>
 --dynamics_model=models/<TFMODEL>
 ```
 3. 示例：
 ```
-python synthesize.py --type=dts --gpu=0 --runid="my_cool_fish" --dynamics_target=data/dynamic_textures/fish --dynamics_model=models/MSOEnet_ucf101train01_6e-4_allaug_exceptscale_randorder.tfmodel
-```
----------
-```
 python main.py --type=dts --gpu=0 --runid="cloud!" --dynamics_target=data/dynamic_textures/cloud --dynamics_model=models/MSOEnet_ucf101train01_6e-4_allaug_exceptscale_randorder.tfmodel
 
+```
+
+## 动态风格迁移
+```
+python main.py --type=dst --gpu=<NUMBER> --runid=<NAME> --dynamics_target=data/dynamic_textures/<FOLDER> --dynamics_model=models/<TFMODEL> --appearance_target=data/textures/<IMAGE>
+```
+
+下载静态纹理到 `./data/textures`. 这个路径就是 `--appearance_target`.
+
+#### 示例
+```
+python main.py --type=dst --gpu=0 --runid="whoa_water!" --dynamics_target=data/dynamic_textures/water_4 --appearance_target=data/textures/water_paint_cropped.jpeg --dynamics_model=models/MSOEnet_ucf101train01_6e-4_allaug_exceptscale_randorder.tfmodel
 ```
 
 ## 注意
