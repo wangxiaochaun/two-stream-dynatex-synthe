@@ -1,8 +1,7 @@
-from layers import gramian
 import tensorflow as tf
 
 
-class DynamicsDescriptor(object):
+class PhysicsDescriptor(object):
 
     def __init__(self, name, prefix, input, model):
         """
@@ -30,19 +29,20 @@ class DynamicsDescriptor(object):
                  .get_tensor_by_name('{0}/MSOEmultiscale/reshape/Reshape:0'
                                      .format(self.full_name))
 
-    def gradient_for_layer(self, layer):
+    def gramian_for_layer(self, layer):
         """
         Returns a matrix of cross-correlations between the activations of
         convolutional channels in a given layer.
         """
-        # Return the activation of specific layer
         activations = self.activations_for_layer(layer)
+        # TODO: handle the activations of concat layer (optical flow)
         # drop depth because it'll always be a singleton dimension
         activations = tf.squeeze(activations, axis=[1])
 
         # Reshape from (batch, height, width, channels) to
         # (batch, channels, height, width)
         shuffled_activations = tf.transpose(activations, perm=[0, 3, 1, 2])
+        # TODO: modify the function gramian() with function gradient() which calculate gradient
         return gramian(shuffled_activations, normalize_method='ulyanov')
 
     def activations_for_layer(self, layer):

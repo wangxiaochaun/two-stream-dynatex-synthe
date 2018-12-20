@@ -2,6 +2,7 @@ import tensorflow as tf
 from utilities import load_image, load_images, vgg_process, vgg_deprocess
 from appearance_descriptor import AppearanceDescriptor
 from dynamics_descriptor import DynamicsDescriptor
+from physics_descriptor import PhysicsDescriptor
 from optimizer import Optimizer
 import numpy as np
 
@@ -49,10 +50,17 @@ class Synthesizer(Optimizer):
                 self.dynamics_loss = \
                     self.build_dynamics_descriptors('dynamics_descriptors',
                                                     1e15)
+                # TODO: define the physics loss
+                self.physics_loss = \
+                    self.build_physics_descriptors('physics_descriptors',
+                                                   1e1)
 
                 # evaluate dynamic texture loss
-                self.dyntex_loss = tf.add(self.appearance_loss,
-                                          self.dynamics_loss)
+                # self.dyntex_loss = tf.add(self.appearance_loss,
+                #                           self.dynamics_loss)
+                self.dyntex_loss = tf.add_n([self.appearance_loss,
+                                             self.dynamics_loss,
+                                             self.physics_loss])
 
                 # averaging loss over batch
                 self.dyntex_loss = tf.div(self.dyntex_loss,
@@ -98,6 +106,26 @@ class Synthesizer(Optimizer):
                 gramians.append([d.gramian_for_layer(l) for l in loss_layers])
             return tf.multiply(self.style_loss('dynamics_style_loss',
                                                gramians), weight)
+
+    def build_physics_descriptors(self, name, weight):
+        with tf.get_default_graph().name_scope(name):
+            loss_layers = ['MSOEnet_concat/concat']
+            gradients = []
+            for i in range(self.input_frame_count - 1):
+                # input is in BGR [0-mean, 255-mean] mean subtracted, but
+                # MSOEnet accepts grascale [0, 1]
+                target = tf.image.rgb_to_grayscale(
+                    tf.stack(self.target_dynamic_texture[i:i + 2], 1))
+                output = tf.image.rgb_to_grayscale(
+                    vgg_deprocess(self.output[:, i:i + 2], no_clip=True,
+                                  unit_scale=True))
+                input = [target, output]
+                d = PhysicsDescriptor('physics_descriptor_' + str(i + 1),
+                                       name, tf.concat(axis=0, values=input),
+                                       self.user_config['dynamics_model'])
+                gradients.append([d.gramian_for_layer(l) for l in loss_layers])
+            return tf.multiply(self.style_loss('physics_style_loss',
+                                               gradients), weight)
 
     def style_loss(self, name, gramians):
         with tf.get_default_graph().name_scope(name):

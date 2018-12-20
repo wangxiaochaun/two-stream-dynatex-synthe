@@ -33,18 +33,19 @@ class Optimizer(object):
 
         print_string = '(%s) Iteration %d: dynamic texture loss: %f ' \
                        'appearance loss: %f dynamics ' \
-                       'loss: %f ' \
+                       'loss: %f physics loss: %f' \
                        'iter per/s: %f ETA: %s' % (run_id, i + 1,
                                                    losses[0],
                                                    losses[1],
                                                    losses[2],
+                                                   losses[3],
                                                    it_per_sec,
                                                    eta_string)
         print(print_string)
         self.last_print = time.time()
 
     def minimize_callback(self, dyntex_loss, appearance_loss,
-                          dynamics_loss, output, summaries):
+                          dynamics_loss, physics_loss, output, summaries):
         # if hasattr(self, 'current_loss'):
         #     self.past_loss = self.current_loss
         # self.current_loss = dyntex_loss
@@ -56,7 +57,7 @@ class Optimizer(object):
         run_id = self.user_config['run_id']
 
         # print training information
-        self.print_info([dyntex_loss, appearance_loss, dynamics_loss])
+        self.print_info([dyntex_loss, appearance_loss, dynamics_loss, physics_loss])
 
         if (i + 1) % snapshot_frequency == 0:
             print('Saving snapshot...')
@@ -154,6 +155,7 @@ class Optimizer(object):
                                    fetches=[self.dyntex_loss,
                                             self.appearance_loss,
                                             self.dynamics_loss,
+                                            self.physics_loss,
                                             self.output,
                                             self.summaries],
                                    loss_callback=self.minimize_callback)
